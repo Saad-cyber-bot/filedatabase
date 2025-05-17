@@ -12,10 +12,6 @@ ADMIN_PASSWORD = "superadmin123"
 USER_PASSWORD = "hemmelig123"
 
 def check_password():
-    if "password_correct" not in st.session_state:
-        st.session_state["password_correct"] = False
-        st.session_state["role"] = ""
-
     def password_entered():
         pw = st.session_state.get("password", "")
         if pw == ADMIN_PASSWORD:
@@ -27,13 +23,30 @@ def check_password():
         else:
             st.session_state["password_correct"] = False
 
-    if not st.session_state["password_correct"]:
-        st.text_input("🔐 Skriv inn passord:", type="password", key="password", on_change=password_entered)
-        if st.session_state.get("password") and not st.session_state["password_correct"]:
-            st.error("⛔ Feil passord!")
+    if "password_correct" not in st.session_state:
+        st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
+        st.stop()
+    elif not st.session_state["password_correct"]:
+        st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
+        st.error("⛔ Feil passord!")
         st.stop()
 
 check_password()
+
+# 🔒 Skjul meny for alle som IKKE er admin
+if st.session_state.get("role") != "admin":
+    st.markdown(
+        """
+        <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+st.write("Du er logget inn som:", st.session_state["role"])
+
 
 
 def get_file_type(filename):
