@@ -12,14 +12,17 @@ from email.message import EmailMessage
 ADMIN_PASSWORD = "superadmin123"
 USER_PASSWORD = "hemmelig123"
 
-# --- Skjul ALT før vi vet hvem brukeren er ---
+# --- Skjul ALT før vi vet om brukeren er admin ---
 hide_all_ui = """
     <style>
         #MainMenu {visibility: hidden !important;}
         header {visibility: hidden !important;}
         footer {visibility: hidden !important;}
-        .css-164nlkn.egzxvld1 {visibility: hidden !important;} /* GitHub-ikon */
-        .css-1dp5vir {visibility: hidden !important;} /* Streamlit-krone */
+        
+        /* Skjul GitHub-logo og Streamlit-krone */
+        footer:has(a[href*="github"]) {visibility: hidden !important;}
+        footer:has(span:has-text("Streamlit")) {visibility: hidden !important;}
+        [data-testid="stDecoration"] {display: none !important;}
     </style>
 """
 st.markdown(hide_all_ui, unsafe_allow_html=True)
@@ -48,18 +51,20 @@ def check_password():
 # --- Kjør innlogging ---
 check_password()
 
-# --- Hvis admin, vis alt igjen ---
+# --- Vis ALT igjen hvis admin ---
 if st.session_state.get("role") == "admin":
-    show_admin_ui = """
+    show_all_ui = """
         <style>
             #MainMenu {visibility: visible !important;}
             header {visibility: visible !important;}
             footer {visibility: visible !important;}
-            .css-164nlkn.egzxvld1 {visibility: visible !important;}
-            .css-1dp5vir {visibility: visible !important;}
+
+            footer:has(a[href*="github"]) {visibility: visible !important;}
+            footer:has(span:has-text("Streamlit")) {visibility: visible !important;}
+            [data-testid="stDecoration"] {display: block !important;}
         </style>
     """
-    st.markdown(show_admin_ui, unsafe_allow_html=True)
+    st.markdown(show_all_ui, unsafe_allow_html=True)
 
 
 
