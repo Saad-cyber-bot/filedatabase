@@ -8,23 +8,29 @@ import smtplib
 from email.message import EmailMessage
 
 
-APP_PASSWORD = "hemmelig123"
+ADMIN_PASSWORD = "superadmin123"
+USER_PASSWORD = "hemmelig123"
 
-# Enkelt passordbeskyttelse
 def check_password():
+    if "password_correct" not in st.session_state:
+        st.session_state["password_correct"] = False
+        st.session_state["role"] = ""
+
     def password_entered():
-        if st.session_state["password"] == APP_PASSWORD:
+        pw = st.session_state.get("password", "")
+        if pw == ADMIN_PASSWORD:
             st.session_state["password_correct"] = True
-            del st.session_state["password"]
+            st.session_state["role"] = "admin"
+        elif pw == USER_PASSWORD:
+            st.session_state["password_correct"] = True
+            st.session_state["role"] = "user"
         else:
             st.session_state["password_correct"] = False
 
-    if "password_correct" not in st.session_state:
-        st.text_input("🔒 Skriv inn passord:", type="password", on_change=password_entered, key="password")
-        st.stop()
-    elif not st.session_state["password_correct"]:
-        st.text_input("🔒 Skriv inn passord:", type="password", on_change=password_entered, key="password")
-        st.error("Feil passord!")
+    if not st.session_state["password_correct"]:
+        st.text_input("🔐 Skriv inn passord:", type="password", key="password", on_change=password_entered)
+        if st.session_state.get("password") and not st.session_state["password_correct"]:
+            st.error("⛔ Feil passord!")
         st.stop()
 
 check_password()
