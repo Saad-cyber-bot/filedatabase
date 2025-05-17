@@ -12,15 +12,17 @@ from email.message import EmailMessage
 ADMIN_PASSWORD = "superadmin123"
 USER_PASSWORD = "hemmelig123"
 
-# --- Alltid skjul meny før innlogging ---
-hide_ui = """
+# --- Skjul ALT før vi vet hvem brukeren er ---
+hide_all_ui = """
     <style>
-        #MainMenu {visibility: hidden;}
-        header {visibility: hidden;}
-        footer {visibility: hidden;}
+        #MainMenu {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        .css-164nlkn.egzxvld1 {visibility: hidden !important;} /* GitHub-ikon */
+        .css-1dp5vir {visibility: hidden !important;} /* Streamlit-krone */
     </style>
 """
-st.markdown(hide_ui, unsafe_allow_html=True)
+st.markdown(hide_all_ui, unsafe_allow_html=True)
 
 # --- Passordbeskyttelse ---
 def check_password():
@@ -35,30 +37,29 @@ def check_password():
         else:
             st.session_state["password_correct"] = False
 
-    # Første gang – vis inputfelt
     if "password_correct" not in st.session_state:
         st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
         st.stop()
-    
-    # Hvis feil passord
     elif not st.session_state["password_correct"]:
         st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
         st.error("⛔ Feil passord!")
         st.stop()
 
-# --- Kjør passordkontrollen ---
+# --- Kjør innlogging ---
 check_password()
 
-# --- Vis UI kun hvis admin ---
+# --- Hvis admin, vis alt igjen ---
 if st.session_state.get("role") == "admin":
-    show_ui = """
+    show_admin_ui = """
         <style>
-            #MainMenu {visibility: visible;}
-            header {visibility: visible;}
-            footer {visibility: visible;}
+            #MainMenu {visibility: visible !important;}
+            header {visibility: visible !important;}
+            footer {visibility: visible !important;}
+            .css-164nlkn.egzxvld1 {visibility: visible !important;}
+            .css-1dp5vir {visibility: visible !important;}
         </style>
     """
-    st.markdown(show_ui, unsafe_allow_html=True)
+    st.markdown(show_admin_ui, unsafe_allow_html=True)
 
 
 
