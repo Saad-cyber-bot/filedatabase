@@ -8,9 +8,21 @@ import smtplib
 from email.message import EmailMessage
 
 
+# --- Globale passord ---
 ADMIN_PASSWORD = "superadmin123"
 USER_PASSWORD = "hemmelig123"
 
+# --- Alltid skjul meny før innlogging ---
+hide_ui = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_ui, unsafe_allow_html=True)
+
+# --- Passordbeskyttelse ---
 def check_password():
     def password_entered():
         pw = st.session_state.get("password", "")
@@ -23,29 +35,30 @@ def check_password():
         else:
             st.session_state["password_correct"] = False
 
+    # Første gang – vis inputfelt
     if "password_correct" not in st.session_state:
         st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
         st.stop()
+    
+    # Hvis feil passord
     elif not st.session_state["password_correct"]:
         st.text_input("🔐 Skriv inn passord:", type="password", on_change=password_entered, key="password")
         st.error("⛔ Feil passord!")
         st.stop()
 
+# --- Kjør passordkontrollen ---
 check_password()
 
-# 🔒 Skjul meny for alle som IKKE er admin
-if st.session_state.get("role") != "admin":
-    st.markdown(
-        """
+# --- Vis UI kun hvis admin ---
+if st.session_state.get("role") == "admin":
+    show_ui = """
         <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
+            #MainMenu {visibility: visible;}
+            header {visibility: visible;}
+            footer {visibility: visible;}
         </style>
-        """,
-        unsafe_allow_html=True
-    )
-st.write("Du er logget inn som:", st.session_state["role"])
+    """
+    st.markdown(show_ui, unsafe_allow_html=True)
 
 
 
